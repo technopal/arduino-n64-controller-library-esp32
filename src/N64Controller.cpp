@@ -1,24 +1,8 @@
-
 #include "N64Controller.h"
 #include <Arduino.h>
 
-N64Controller::N64Controller(unsigned char serialPin) {
-  if(serialPin > 13)
-    serialPin = 2;
-  // Communication with N64 controller controller on this pin
-  // Don't remove these lines, we don't want to push +5V to the controller
-  digitalWrite(serialPin, LOW);
-  pinMode(serialPin, INPUT);
-
-  // 0-7: DDRD, 8-13: DDRB
-  bool isDDRD = (serialPin / 8) == 0;
-  char n64_pincode = 0x01 << (serialPin % 8);
-
-  if(isDDRD) {
-      interface = new N64Interface_PIND(n64_pincode);
-  } else {
-      interface = new N64Interface_PINB(n64_pincode);
-  }
+N64Controller::N64Controller(HardwareSerial *serialPort) {
+  interface = new N64Interface_ESP32(serialPort);
 }
 
 void N64Controller::begin() {
